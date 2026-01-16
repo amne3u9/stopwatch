@@ -32,19 +32,3 @@ class Stopwatch:
             self.total_time_day.append(self.total_t)
             self.total_t = 0.0
 
-timer = Stopwatch()
-while True:
-    cmd = input('>>> ')
-
-    if cmd == 'start':
-        timer.start_t()
-
-    elif cmd == 'stop':
-        timer.stop_t()
-
-    elif cmd == 'reset':
-        timer.reset_t()
-
-    elif cmd == 'exit':
-        print(timer.total_time_day)
-        break
