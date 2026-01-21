@@ -5,8 +5,6 @@ from tkinter import *
 class Stopwatch:
 
     def __init__(self):
-        # общее время сессии за день
-        self.total_time_day = []
         # флаг вкл./ выкл. секундомер
         self.running = False
         # начало отсчета
@@ -27,14 +25,11 @@ class Stopwatch:
     def reset_t(self):
         if self.running:
             self.total_t += (time.time() - self.start_time)
-            # сохранить total_t в 'время' сессии за день
-            self.total_time_day.append(self.total_t)
             self.running = False
-        elif self.total_t > 0.0:
-            # сохранить total_t в 'время' сессии за день
-            self.total_time_day.append(self.total_t)
-        # в любом случае скидываем таймер
+        send_data = self.total_t
         self.total_t = 0.0
+
+        return send_data
 
     def get_t(self):
         if self.running:
