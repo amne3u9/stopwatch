@@ -1,5 +1,6 @@
 import time
 from tkinter import *
+from session_manager import SessionManager
 
 
 class Stopwatch:
@@ -23,10 +24,9 @@ class Stopwatch:
             self.running = False
 
     def reset_t(self):
-        if self.running:
-            self.total_t += (time.time() - self.start_time)
-            self.running = False
-        send_data = self.total_t
+        self.total_t += (time.time() - self.start_time)
+        send_data = round(self.total_t, 2)
+        self.running = False
         self.total_t = 0.0
 
         return send_data
@@ -39,7 +39,7 @@ class Stopwatch:
 
 # ----GUI----
 sw = Stopwatch()
-
+sm = SessionManager()
 
 def update_sw():
     now_time = time.strftime('%H:%M:%S', sw.get_t())
@@ -66,7 +66,7 @@ def reset():
     btn_reset.place_forget()
     btn_pause.pack_forget()
     btn_start.pack()
-    sw.reset_t()
+    sm.add_session(sw.reset_t())
 
 
 shell_SW = Tk()
