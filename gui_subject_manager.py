@@ -2,11 +2,11 @@
 from tkinter import *
 from tkinter import ttk
 from utils import center_window
-from subjects_manager import SubjectsManager
+from db_manager import DataBaseManager
 from subject_menu import creation_menu_subject
 
 # ---- Логика ----
-sub_m = SubjectsManager()
+db_m = DataBaseManager()
 
 
 def choice() -> None:
@@ -30,11 +30,11 @@ def add() -> None:
     """
 
     def add_new_value() -> None:
-        new_subject = subject.get()
+        new_subject = subject.get().strip()
         if new_subject:
-            passage = sub_m.add_subject(new_subject)
+            passage = db_m.add_subject(new_subject)
             if passage:
-                update_subjects = sub_m.get_subjects()
+                update_subjects = db_m.get_subjects()
                 combo_menu.config(values=update_subjects)
                 label.config(text="Предмет добавлен", fg='green')
                 new_window.destroy()
@@ -66,8 +66,8 @@ def delete() -> None:
     """
 
     def deletion_subject() -> None:
-        sub_m.delete_subject(del_value)
-        update_subjects = sub_m.get_subjects()
+        db_m.delete_subject(del_value)
+        update_subjects = db_m.get_subjects()
         combo_menu.config(values=update_subjects)
         combo_menu.set("")
         label.config(text="Предмет удален", fg='green')
@@ -75,7 +75,7 @@ def delete() -> None:
 
     del_value = combo_menu.get()
     if del_value:
-        if del_value in sub_m.get_subjects():
+        if del_value in db_m.get_subjects():
             new_window = Toplevel(shell_SS)
             new_window.title('Deletion')
             center_window(new_window, 250, 150)
@@ -105,7 +105,7 @@ btn_add = ttk.Button(shell_SS, text='Add', command=add)
 btn_delete = ttk.Button(shell_SS, text='Delete', command=delete)
 
 # выпадающее меню
-combo_menu = ttk.Combobox(shell_SS, values=sub_m.get_subjects(), state="readonly")
+combo_menu = ttk.Combobox(shell_SS, values=db_m.get_subjects(), state="readonly")
 combo_menu.pack(pady=45)
 
 # Отображение кнопок
