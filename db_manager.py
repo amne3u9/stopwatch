@@ -5,10 +5,10 @@ class DataBaseManager:
 
     def load_base(self) -> dict:
         """
-        Считывает базу из файла(data.json).
+        Считывает базу из файла(data_base.json).
         :return: Словарь.
         """
-        with open("data.json", "r", encoding="utf-8") as db:
+        with open("data_base.json", "r", encoding="utf-8") as db:
             return json.load(db)
 
     def is_subject_in_db(self, subject: str, data: dict) -> bool:
@@ -25,7 +25,7 @@ class DataBaseManager:
         Сохраняет новые данные в файл.
         :param data: Словарь.
         """
-        with open("data.json", "w", encoding="utf-8") as db:
+        with open("data_base.json", "w", encoding="utf-8") as db:
             json.dump(data, db, indent=4, ensure_ascii=False)
 
     def add_subject(self, name: str) -> bool:
