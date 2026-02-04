@@ -1,15 +1,14 @@
 import time
 import tkinter as tk
-from session_manager import SessionManager
-from stopwatch import StopWatch
+from stopwatch import Stopwatch
+from db_manager import DataBaseManager
 
 # ---- Логика ----
-sw = StopWatch()
-sm = SessionManager()
+sw = Stopwatch()
+db_m = DataBaseManager()
+
 
 def open_stopwatch_window(parent: tk, subject: str) -> None:
-
-
     def update_sw() -> None:
         """
         Обновляет Label с текущим временем секундомера каждые 200 мс.
@@ -18,7 +17,6 @@ def open_stopwatch_window(parent: tk, subject: str) -> None:
         now_time = time.strftime('%H:%M:%S', sw.get_t())
         label.config(text=now_time)
         shell_sw.after(200, update_sw)
-
 
     def start() -> None:
         """
@@ -32,7 +30,6 @@ def open_stopwatch_window(parent: tk, subject: str) -> None:
         sw.start_t()
         update_sw()
 
-
     def stop() -> None:
         """
         Останавливает секундомер.
@@ -44,7 +41,6 @@ def open_stopwatch_window(parent: tk, subject: str) -> None:
         btn_reset.place(x=73, y=127)
         sw.stop_t()
 
-
     def reset() -> None:
         """
         Сбрасывает секундомер и добавляет прошедшее время в SessionManager.
@@ -53,8 +49,7 @@ def open_stopwatch_window(parent: tk, subject: str) -> None:
         btn_reset.place_forget()
         btn_pause.pack_forget()
         btn_start.pack()
-        sm.add_session(subject, sw.reset_t())
-
+        db_m.add_session(subject, sw.reset_t())
 
     # ---- GUI ----
     shell_sw = tk.Toplevel(parent)
