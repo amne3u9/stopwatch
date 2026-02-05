@@ -3,7 +3,11 @@ import tkinter as tk
 from tkinter import ttk
 from utils import center_window
 from gui_stopwatch import open_stopwatch_window
+from gui_history import History
+from db_manager import DataBaseManager
 
+hist = History()
+db_m = DataBaseManager()
 
 def creation_menu_subject(parent: tk, name: str) -> None:
     """
@@ -20,9 +24,12 @@ def creation_menu_subject(parent: tk, name: str) -> None:
 
     def open_history() -> None:
         """
-        Открывает окно с историей.
+        Открывает окно с историей предмета и
+        передает данные из файла.
         """
-        pass
+        # считываем базу из файла
+        data = db_m.load_base()
+        hist.open_history_window(parent, db_m, data, name)
 
     def back_to() -> None:
         """

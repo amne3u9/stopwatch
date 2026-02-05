@@ -11,7 +11,7 @@ class DataBaseManager:
 
     def load_base(self) -> dict:
         """
-        Считывает базу из файла(data_base.json).
+        Считывает базу из файла.
         :return: Словарь.
         """
         with open("data_base.json", "r", encoding="utf-8") as db:
@@ -19,7 +19,7 @@ class DataBaseManager:
 
     def is_subject_in_db(self, subject: str, data: dict) -> bool:
         """
-        Проверяет наличие предмета(subject) в полученных данных(data).
+        Проверяет наличие предмета в полученных данных.
         :param subject: Название предмета.
         :param data: Данные из базы.
         :return: Bool значение.
@@ -84,16 +84,15 @@ class DataBaseManager:
         # обновляем базу
         self.save_data(base)
 
-    def get_sum_seconds(self, name: str) -> float:
+    def get_sum_seconds(self, data: dict,  name: str) -> float:
         """
         Считает общее время сессий предмета в секундах.
+        :param data: Словарь с данными из базы.
         :param name: Предмет
         :return: Общее число секунд.
         """
-        # считываем базу из файла
-        base = self.load_base()
         # получаем сессии по дням
-        days = base["subjects"][name]["history"].values()
+        days = data["subjects"][name]["history"].values()
         # суммируем сессии
         sum_seconds = sum(sum(day) for day in days)
 
@@ -111,41 +110,42 @@ class DataBaseManager:
 
         return f"{q_hours:02} h. {q_minutes:02} m. {q_seconds:02} s."
 
-    def get_total_time(self, name: str) -> str:
+    def get_total_time(self, data: dict, name: str) -> str:
         """
+        :param data: Словарь с данными из базы.
         :param name: Предмет.
         :return: Строку, общего времени сессий предмета, в формате "ЧЧ h. ММ m. СС s.".
         """
-        seconds = self.get_sum_seconds(name)
+        seconds = self.get_sum_seconds(data, name)
         result = self.format_seconds(seconds)
 
         return result
 
-    def get_total_days(self, name: str) -> int:
+    def get_total_days(self, data: dict, name: str) -> int:
         """
         Считает кол-во дней предмета.
+        :param data: Словарь с данными из базы.
         :param name: Предмет.
         :return: Число дней.
         """
-        # считываем базу из файла
-        base = self.load_base()
         # получаем все даты предмета
-        total_days = len(base["subjects"][name]["history"].keys())
+        total_days = len(data["subjects"][name]["history"].keys())
 
         return total_days
 
-    def get_avg_time_session(self, name: str) -> str:
+    def get_avg_time_session(self, data: dict, name: str) -> str:
         """
         Считает среднее время сессии предмета.
+        :param data: Словарь с данными из базы.
         :param name: Предмет.
         :return: Строку в формате "ЧЧ h. ММ m. СС s.".
         """
         # получаем кол-во дней
-        quantity_days = self.get_total_days(name)
+        quantity_days = self.get_total_days(data, name)
         if quantity_days == 0:
             return "00 h. 00 m. 00 s."
         # получаем кол-во секунд
-        quantity_seconds = self.get_sum_seconds(name)
+        quantity_seconds = self.get_sum_seconds(data, name)
         # вычисляем среднее значение в секундах
         avg_seconds = quantity_seconds / quantity_days
         # получаем отформатированный результат
