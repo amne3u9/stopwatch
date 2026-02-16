@@ -1,5 +1,5 @@
 import json
-from datetime import date
+from datetime import datetime, date
 
 
 class DataBaseManager:
@@ -84,7 +84,7 @@ class DataBaseManager:
         # обновляем базу
         self.save_data(base)
 
-    def get_sum_seconds(self, data: dict,  name: str) -> float:
+    def get_sum_seconds(self, data: dict, name: str) -> float:
         """
         Считает общее время сессий предмета в секундах.
         :param data: Словарь с данными из базы.
@@ -152,3 +152,94 @@ class DataBaseManager:
         result = self.format_seconds(avg_seconds)
 
         return result
+
+    def get_start_date_datetime(self, data: dict, name: str) -> datetime.date:
+        """
+        Форматирует строку с начальной датой в datetime.date.
+
+        :param data: Словарь с данными.
+        :param name: Предмет.
+        :return: Значение datetime.date формата.
+        """
+        start_date = self.get_min_date(data, name)
+        return datetime.strptime(start_date, '%Y-%m-%d').date()
+
+    def get_finish_date_datetime(self, data: dict, name: str) -> datetime.date:
+        """
+        Форматирует строку конечной датой в datetime.date.
+
+        :param data: Словарь с данными.
+        :param name: Предмет.
+        :return: Значение datetime.date формата.
+        """
+        finish_date = self.get_max_date(data, name)
+        return datetime.strptime(finish_date, '%Y-%m-%d').date()
+
+    def get_min_date(self, data: dict, name: str) -> str:
+        """
+        Возвращает минимальную (раннюю) дату истории предмета.
+
+        :param data: Словарь с данными.
+        :param name: Предмет.
+        :return: Строку начальной (ранней) даты истории предмета.
+        """
+        return min(data["subjects"][name]["history"])
+
+    def get_max_date(self, data: dict, name: str) -> str:
+        """
+        Возвращает максимальную (позднюю) дату истории предмета.
+
+        :param data: Словарь с данными.
+        :param name: Предмет.
+        :return: Строку максимальной (поздней) даты истории предмета.
+        """
+        return max(data["subjects"][name]["history"])
+
+    def is_date_in_history(self, data: dict, name: str, date_: str) -> bool:
+        """
+        Проверяет корректность даты.
+
+        :param data: Словарь с данными.
+        :param name: Предмет.
+        :param date_: Строка даты.
+        :return: Bool значение.
+        """
+        return date_ in data["subjects"][name]["history"]
+
+    def is_date_order_correct(self, data: dict, date_from: str, date_to: str) -> bool:
+        """
+        Проверяет корректность порядка дат.
+
+        :param data: Словарь с данными.
+        :param date_from: Дата начала диапазона.
+        :param date_to: Дата окончания диапазона.
+        :return: Bool значение.
+        """
+        return date_from <= date_to
+
+    def get_data_filter(self, data: dict, name: str, date_from=None, date_to=None) -> dict:
+        """
+        Фильтрует историю предмета по диапазону дат.
+
+        :param data: Словарь с данными.
+        :param name: Предмет.
+        :param date_from: Дата начала.
+        :param date_to: Дата окончания.
+        :return: Словарь с историей предмета за указанный период или строка с ошибкой.
+        """
+        if date_from is None:
+            date_from = self.get_min_date(data, name)
+        if date_to is None:
+            date_to = self.get_max_date(data, name)
+        filtered_dict = {"subjects":
+                             {name:
+                                  {"history":
+                                       {}
+                                   }
+                              }
+                         }
+        filtered_dict["subjects"][name]["history"] = {date_: value for date_, value in
+                                                      data["subjects"][name]["history"].items() if
+                                                      date_from <= date_ <= date_to}
+
+        return filtered_dict
