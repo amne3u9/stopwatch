@@ -9,19 +9,22 @@ class DataBaseManager:
     и их историей сессий.
     """
 
+    def __init__(self, file_path: str):
+        self.file_path = file_path
+
     def load_base(self) -> dict:
         """
         Считывает базу из файла.
-        :return: Словарь.
+        :return: Словарь с данными.
         """
-        with open("data_base.json", "r", encoding="utf-8") as db:
+        with open(self.file_path, "r", encoding="utf-8") as db:
             return json.load(db)
 
-    def is_subject_in_db(self, subject: str, data: dict) -> bool:
+    def is_subject_in_db(self, data: dict, subject: str) -> bool:
         """
         Проверяет наличие предмета в полученных данных.
+        :param data: Словарь с данными.
         :param subject: Название предмета.
-        :param data: Данные из базы.
         :return: Bool значение.
         """
         return subject in data["subjects"]
@@ -29,60 +32,73 @@ class DataBaseManager:
     def save_data(self, data: dict) -> None:
         """
         Сохраняет новые данные в файл.
-        :param data: Словарь.
+        :param data: Словарь с данными.
         """
-        with open("data_base.json", "w", encoding="utf-8") as db:
+        with open(self.file_path, "w", encoding="utf-8") as db:
             json.dump(data, db, indent=4, ensure_ascii=False)
 
-    def add_subject(self, name: str) -> bool:
+    def add_subject(self, data: dict, name: str) -> dict:
         """
-        Добавляет предмет(name).
+        Добавляет новый предмет в данные.
+        :param data: Словарь с данными.
         :param name: Предмет.
-        :return: Bool значение.
+        :return: Словарь с добавленным предметом.
         """
-        # считываем базу из файла
-        base = self.load_base()
-        # проверяем отсутствие предмета в базе
-        if self.is_subject_in_db(name, base):
-            return False
         # добавляем новый предмет(name) в "subjects" со значением "history".
-        base["subjects"][name] = {"history": {}}
-        # обновляем базу
-        self.save_data(base)
-        return True
+        data["subjects"][name] = {"history": {}}
 
-    def delete_subject(self, name: str) -> None:
+        return data
+
+    def delete_subject(self, data: dict, name: str) -> dict:
         """
-        Удаляет предмет(name).
+        Удаляет предмет из данных.
+        :param data: Словарь с данными.
         :param name: Предмет.
+        :return: Словарь без удаленного предмета.
         """
-        # считываем базу из файла
-        base = self.load_base()
         # удаляем предмет(name) из "subjects"
-        del base["subjects"][name]
-        # обновляем базу
-        self.save_data(base)
+        del data["subjects"][name]
 
-    def get_subjects(self) -> list[str]:
-        """
-        :return: Список предметов из базы.
-        """
-        return list(self.load_base()["subjects"].keys())
+        return data
 
-    def add_session(self, name: str, duration: float) -> None:
+    def get_subjects(self, data: dict) -> list[str]:
         """
-        Добавляет временную сессию по дате в предмет.
+        :param data: Словарь с данными.
+        :return: Список предметов из словаря.
+        """
+        return list(data["subjects"].keys())
+
+    def get_date_today(self) -> str:
+        return date.today().strftime('%Y-%m-%d')
+
+    def is_today_in_subject(self, data: dict, today: str, name: str) -> bool:
+        return today in data["subjects"][name]["history"]
+
+    def get_sum_seconds_today(self, data: list) -> float:
+        return sum(data)
+
+    def get_time(self, data: dict, name: str) -> str:
+        today = self.get_date_today()
+        if self.is_today_in_subject(data, today, name):
+            data_today = data["subjects"][name]["history"][today]
+            return self.format_seconds(self.get_sum_seconds_today(data_today))
+        else:
+            return "00 ч. 00 м. 00 с."
+
+    def add_session(self, data: dict, name: str, duration: float) -> dict:
+        """
+        Добавляет новую сессию по дате в предмет.
+        :param data: Словарь с данными.
         :param name: Предмет.
         :param duration: Время сессии.
+        :return: Словарь с добавленной сессией.
         """
         # фиксируем дату сессии
-        today = date.today().strftime('%Y-%m-%d')
-        # считываем базу из файла
-        base = self.load_base()
+        today = self.get_date_today()
         # проверяем дату в истории, если нет создает список и добавляем время
-        base["subjects"][name]["history"].setdefault(today, []).append(duration)
-        # обновляем базу
-        self.save_data(base)
+        data["subjects"][name]["history"].setdefault(today, []).append(duration)
+
+        return data
 
     def get_sum_seconds(self, data: dict, name: str) -> float:
         """
@@ -102,19 +118,19 @@ class DataBaseManager:
         """
         Форматирует число секунд в ЧЧ.ММ.СС.
         :param seconds: Число секунд.
-        :return: Строку в формате "ЧЧ h. ММ m. СС s.".
+        :return: Строку в формате "ЧЧ ч. ММ м. СС с.".
         """
         q_hours = int(seconds // 3600)
         q_minutes = int((seconds % 3600) // 60)
         q_seconds = int(seconds % 60)
 
-        return f"{q_hours:02} h. {q_minutes:02} m. {q_seconds:02} s."
+        return f"{q_hours:02} ч. {q_minutes:02} м. {q_seconds:02} с."
 
     def get_total_time(self, data: dict, name: str) -> str:
         """
-        :param data: Словарь с данными из базы.
+        :param data: Словарь с данными.
         :param name: Предмет.
-        :return: Строку, общего времени сессий предмета, в формате "ЧЧ h. ММ m. СС s.".
+        :return: Строку, общего времени сессий предмета, в формате "ЧЧ ч. ММ м. СС с.".
         """
         seconds = self.get_sum_seconds(data, name)
         result = self.format_seconds(seconds)
@@ -124,7 +140,7 @@ class DataBaseManager:
     def get_total_days(self, data: dict, name: str) -> int:
         """
         Считает кол-во дней предмета.
-        :param data: Словарь с данными из базы.
+        :param data: Словарь с данными.
         :param name: Предмет.
         :return: Число дней.
         """
@@ -133,17 +149,17 @@ class DataBaseManager:
 
         return total_days
 
-    def get_avg_time_session(self, data: dict, name: str) -> str:
+    def get_avg_study_time(self, data: dict, name: str) -> str:
         """
-        Считает среднее время сессии предмета.
-        :param data: Словарь с данными из базы.
+        Считает среднее время сессии предмета по дням.
+        :param data: Словарь с данными.
         :param name: Предмет.
-        :return: Строку в формате "ЧЧ h. ММ m. СС s.".
+        :return: Строку в формате "ЧЧ ч. ММ м. СС с.".
         """
         # получаем кол-во дней
         quantity_days = self.get_total_days(data, name)
         if quantity_days == 0:
-            return "00 h. 00 m. 00 s."
+            return "00 ч. 00 м. 00 с."
         # получаем кол-во секунд
         quantity_seconds = self.get_sum_seconds(data, name)
         # вычисляем среднее значение в секундах
@@ -153,45 +169,21 @@ class DataBaseManager:
 
         return result
 
-    def get_start_date_datetime(self, data: dict, name: str) -> datetime.date:
-        """
-        Форматирует строку с начальной датой в datetime.date.
-
-        :param data: Словарь с данными.
-        :param name: Предмет.
-        :return: Значение datetime.date формата.
-        """
-        start_date = self.get_min_date(data, name)
-        return datetime.strptime(start_date, '%Y-%m-%d').date()
-
-    def get_finish_date_datetime(self, data: dict, name: str) -> datetime.date:
-        """
-        Форматирует строку конечной датой в datetime.date.
-
-        :param data: Словарь с данными.
-        :param name: Предмет.
-        :return: Значение datetime.date формата.
-        """
-        finish_date = self.get_max_date(data, name)
-        return datetime.strptime(finish_date, '%Y-%m-%d').date()
-
-    def get_min_date(self, data: dict, name: str) -> str:
+    def get_min_date(self, data: dict, name: str) -> datetime.date:
         """
         Возвращает минимальную (раннюю) дату истории предмета.
-
         :param data: Словарь с данными.
         :param name: Предмет.
-        :return: Строку начальной (ранней) даты истории предмета.
+        :return: Начальную (раннюю) дату истории предмета.
         """
         return min(data["subjects"][name]["history"])
 
-    def get_max_date(self, data: dict, name: str) -> str:
+    def get_max_date(self, data: dict, name: str) -> datetime.date:
         """
         Возвращает максимальную (позднюю) дату истории предмета.
-
         :param data: Словарь с данными.
         :param name: Предмет.
-        :return: Строку максимальной (поздней) даты истории предмета.
+        :return: Максимальную (позднюю) дату истории предмета.
         """
         return max(data["subjects"][name]["history"])
 
@@ -205,17 +197,6 @@ class DataBaseManager:
         :return: Bool значение.
         """
         return date_ in data["subjects"][name]["history"]
-
-    def is_date_order_correct(self, data: dict, date_from: str, date_to: str) -> bool:
-        """
-        Проверяет корректность порядка дат.
-
-        :param data: Словарь с данными.
-        :param date_from: Дата начала диапазона.
-        :param date_to: Дата окончания диапазона.
-        :return: Bool значение.
-        """
-        return date_from <= date_to
 
     def get_data_filter(self, data: dict, name: str, date_from=None, date_to=None) -> dict:
         """

@@ -1,77 +1,122 @@
-"""Окно меню предмета (Stopwatch / History / Back)."""
-import tkinter as tk
-from tkinter import ttk
-from utils import center_window
+"""Окно меню предмета (Stopwatch / History )."""
+import customtkinter as ctk
+
 from gui_stopwatch import open_stopwatch_window
-from gui_history import History
-from db_manager import DataBaseManager
 
-hist = History()
-db_m = DataBaseManager()
 
-def creation_menu_subject(parent: tk, name: str) -> None:
-    """
-    Создает окно с кнопками "Stopwatch", "History", "Back".
-    :param parent: Родительское окно (главное окно выбора предметов).
-    :param name: Предмет.
-    """
+class SubjectActions(ctk.CTkFrame):
+    def __init__(self, master, controller):
+        super().__init__(master)
+        self.controller = controller
+        self.window_title = "Меню предмета"
+        self.configure(fg_color="transparent")
 
-    def open_stopwatch() -> None:
+        self.label_name = ctk.CTkLabel(
+            self,
+            text="",
+            font=("Segoe UI Semibold", 20),
+            text_color='#1D1D1F'
+        )
+        self.label_name.place(relx=0.06, rely=0.16, anchor='w')
+
+        ctk.CTkLabel(
+            self,
+            text="Статистика и управление",
+            font=("Segoe UI Semibold", 13),
+            text_color='#86868B'
+        ).place(relx=0.06, rely=0.24, anchor='w')
+
+        # инфо-блок
+        self.info = ctk.CTkFrame(
+            self,
+            fg_color='#F5F5F7',
+            corner_radius=25,
+            width=350,
+            height=100
+        )
+        self.info.place(relx=0.5, rely=0.43, anchor='center')
+
+        ctk.CTkLabel(
+            self.info,
+            text="СЕГОДНЯ",
+            font=("Segoe UI Bold", 11),
+            text_color='#86868B'
+        ).place(relx=0.06, rely=0.25, anchor='nw')
+
+        self.label_time = ctk.CTkLabel(
+            self.info,
+            text="",
+            font=("Segoe UI Semibold", 30),
+            text_color='#1D1D1F'
+        )
+        self.label_time.place(relx=0.06, rely=0.45, anchor='nw')
+
+        # Кнопки управления
+        self.btn_stopwatch = ctk.CTkButton(
+            self,
+            text="СЕКУНДОМЕР",
+            font=("Segoe UI Semibold", 14),
+            text_color='#1D1D1F',
+            fg_color='#D3E3FD',
+            hover_color="#C1D5F0",
+            corner_radius=29,
+            width=350,
+            height=58,
+            command=self.open_stopwatch
+        )
+        self.btn_stopwatch.place(relx=0.5, rely=0.70, anchor='center')
+
+        self.btn_history = ctk.CTkButton(
+            self,
+            text="ПОСМОТРЕТЬ ИСТОРИЮ",
+            font=("Segoe UI Semibold", 14),
+            text_color='#1D1D1F',
+            fg_color='#F5F5F7',
+            hover_color="#E5E5E7",
+            corner_radius=29,
+            width=350,
+            height=58,
+            command=self.open_history
+        )
+        self.btn_history.place(relx=0.5, rely=0.84, anchor='center')
+
+        self.btn_back = ctk.CTkButton(
+            self,
+            text="←",
+            font=("Segoe UI Semibold", 24),
+            text_color='#1D1D1F',
+            fg_color="transparent",
+            hover_color='#F5F5F7',
+            corner_radius=20,
+            width=40,
+            height=40,
+            border_spacing=0,
+            command=self.back
+        )
+        self.btn_back.place(relx=0.02, rely=0.07, anchor='w')
+        self.btn_back._text_label.grid_configure(pady=(0, 8))
+
+    def on_show(self):
+        name = self.controller.current_subject
+        if name:
+            self.label_name.configure(text=name.upper())
+            time = self.controller.get_time(name)
+            self.label_time.configure(text=time)
+
+    def open_stopwatch(self) -> None:
         """
         Открывает окно секундомера.
         """
-        open_stopwatch_window(parent, name)
+        open_stopwatch_window(self.controller, self.controller.current_subject)
 
-    def open_history() -> None:
+    def open_history(self) -> None:
         """
-        Открывает окно с историей предмета и
-        передает данные из файла.
+        Открывает окно с историей предмета.
         """
-        # считываем базу из файла
-        data = db_m.load_base()
-        hist.open_history_window(parent, db_m, data, name)
+        self.controller.show_frame("History")
 
-    def back_to() -> None:
+    def back(self) -> None:
         """
-        Уничтожает окно с кнопками.
         Разворачивает окно с выбором предметов.
         """
-        menu_subject.destroy()
-        parent.deiconify()
-
-    menu_subject = tk.Toplevel(parent)
-    menu_subject.title(f'Menu {name}')
-    center_window(menu_subject, 250, 160)
-    menu_subject.resizable(False, False)
-    menu_subject.protocol("WM_DELETE_WINDOW", back_to)
-
-    # Изменение стиля кнопок
-    s = ttk.Style()
-    s.configure("Big.TButton", padding=13)
-
-    # Кнопки управления
-    btn_stopwatch = ttk.Button(
-        menu_subject,
-        text="S T O P W A T C H",
-        width=30,
-        style="Big.TButton",
-        command=open_stopwatch
-    )
-    btn_history = ttk.Button(
-        menu_subject,
-        text="H I S T O R Y",
-        width=30,
-        style="Big.TButton",
-        command=open_history
-    )
-    btn_back = ttk.Button(
-        menu_subject,
-        text="B A C K",
-        width=34,
-        command=back_to
-    )
-
-    # Отображение кнопок
-    btn_stopwatch.place(relx=0.5, rely=0.05, anchor='n')
-    btn_history.place(relx=0.5, rely=0.55, anchor='center')
-    btn_back.place(relx=0.5, rely=0.95, anchor='s')
+        self.controller.show_frame("StartWork")

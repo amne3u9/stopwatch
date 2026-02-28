@@ -3,12 +3,12 @@ import time
 
 class Stopwatch:
     """
-    Секундомер, фиксирует время.
+    Секундомер, ведет счет времени.
 
     Атрибуты:
-        start_time(float): начало отсчета.
-        total_t(float): срез времени.
-        running(bool): флаг вкл./выкл.
+        start_time(float): Начало отсчета.
+        total_t(float): Срез времени.
+        running(bool): Флаг вкл./выкл.
     """
 
     def __init__(self):
