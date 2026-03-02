@@ -20,69 +20,69 @@ class StartWork(ctk.CTkFrame):
             self,
             text="ВЫБОР ПРЕДМЕТА",
             font=("Segoe UI Semibold", 20),
-            text_color='#1D1D1F'
+            text_color="#1D1D1F"
         )
-        self.label_main.place(relx=0.5, rely=0.10, anchor='n')
+        self.label_main.place(relx=0.5, rely=0.10, anchor="n")
 
         self.label = ctk.CTkLabel(
             self,
             text="Выберите предмет из списка",
             font=("Segoe UI Semibold", 13),
-            text_color='#86868B'
+            text_color="#86868B"
         )
-        self.label.place(relx=0.5, rely=0.22, anchor='n')
+        self.label.place(relx=0.5, rely=0.22, anchor="n")
 
         # выпадающее меню
         self.combo_menu = ctk.CTkComboBox(
             self,
             values=self.controller.get_subjects(),
             font=("Segoe UI", 14),
-            text_color='#1D1D1F',
+            text_color="#1D1D1F",
             border_width=1,
             border_color="#E5E5E7",
-            fg_color='#F5F5F7',
-            dropdown_fg_color='#FFFFFF',
-            dropdown_hover_color='#F5F5F7',
-            button_color='#D3E3FD',
+            fg_color="#F5F5F7",
+            dropdown_fg_color="#FFFFFF",
+            dropdown_hover_color="#F5F5F7",
+            button_color="#D3E3FD",
             corner_radius=12,
             width=300,
             height=50,
             state="readonly"
         )
-        self.combo_menu.place(relx=0.5, rely=0.37, anchor='center')
+        self.combo_menu.place(relx=0.5, rely=0.37, anchor="center")
 
         # Кнопки управления
         self.btn_choice = ctk.CTkButton(
             self,
-            text='Выбрать',
+            text="Выбрать",
             font=("Segoe UI Semibold", 14),
-            text_color='#1D1D1F',
-            fg_color='#D3E3FD',
+            text_color="#1D1D1F",
+            fg_color="#D3E3FD",
             hover_color="#C1D5F0",
             corner_radius=25,
             width=300,
             height=50,
             command=self.choice
         )
-        self.btn_choice.place(relx=0.5, rely=0.55, anchor='center')
+        self.btn_choice.place(relx=0.5, rely=0.55, anchor="center")
 
         self.btn_add = ctk.CTkButton(
             self,
-            text='Добавить новый',
+            text="Добавить новый",
             font=("Segoe UI Semibold", 14),
-            text_color='#1D1D1F',
-            fg_color='#F5F5F7',
+            text_color="#1D1D1F",
+            fg_color="#F5F5F7",
             hover_color="#E5E5E7",
             corner_radius=25,
             width=300,
             height=50,
             command=self.add
         )
-        self.btn_add.place(relx=0.5, rely=0.63, anchor='n')
+        self.btn_add.place(relx=0.5, rely=0.63, anchor="n")
 
         self.btn_delete = ctk.CTkButton(
             self,
-            text='Удалить предмет',
+            text="Удалить предмет",
             font=("Segoe UI Semibold", 14),
             text_color="#BA1A1A",
             fg_color="transparent",
@@ -92,7 +92,10 @@ class StartWork(ctk.CTkFrame):
             height=50,
             command=self.delete
         )
-        self.btn_delete.place(relx=0.5, rely=0.90, anchor='center')
+        self.btn_delete.place(relx=0.5, rely=0.90, anchor="center")
+
+    def return_label(self) -> None:
+        self.label.configure(text="Выберите предмет из списка", text_color="#86868B")
 
     def choice(self) -> None:
         """
@@ -104,76 +107,116 @@ class StartWork(ctk.CTkFrame):
             self.controller.set_current_subject(name_subject)
             self.controller.show_frame("SubjectActions")
         else:
-            self.label.configure(text="Выберите предмет из списка или добавьте новый", text_color='#007AFF')
+            self.label.configure(text="Выберите предмет из списка или добавьте новый", text_color="#007AFF")
+            self.after(3500, self.return_label)
 
     def add(self) -> None:
         """
         Открывает окно для добавления нового предмета.
-        Проверяет ввод, добавляет предмет в список(combo_menu['values']).
+        Проверяет ввод, добавляет предмет в список(combo_menu["values"]).
         Показывает сообщение.
         """
 
         def add_new_value() -> None:
-            new_subject = subject.get().strip()
+            new_subject = window_entry.get().strip()
             if new_subject:
                 passage = self.controller.add_subject(new_subject)
                 if passage:
                     update_subjects = self.controller.get_subjects()
                     self.combo_menu.configure(values=update_subjects)
-                    self.label.configure(text="Предмет добавлен", text_color='#007AFF')
+                    self.label.configure(text="Предмет добавлен", text_color="#007AFF")
                     new_window.destroy()
+                    self.after(3500, self.return_label)
                 else:
-                    label2.configure(text="Такой предмет уже есть", text_color='#007AFF')
+                    label2.configure(text="Такой предмет уже есть", text_color="#007AFF")
             else:
-                label2.configure(text="Введите имя предмета", text_color='#007AFF')
+                label2.configure(text="Введите имя предмета", text_color="#007AFF")
+
+        def update_label_counter(*args) -> None:
+            max_size = 25
+            name = text.get()
+            text_size = len(name)
+
+            if text_size > max_size:
+                text.set(name[:25])
+                text_size = max_size
+
+            remainder = max_size - text_size
+            if 5 < remainder < 26:
+                label_counter.configure(text=f"осталось символов: {remainder}",
+                                        text_color="#86868B"
+                                        )
+                window_entry.configure(border_color="#86868B")
+            elif 0 < remainder <= 5:
+                label_counter.configure(text=f"осталось символов: {remainder}",
+                                        text_color="#FF8C00"
+                                        )
+                window_entry.configure(border_color="#FF8C00")
+            else:
+                label_counter.configure(text=f"осталось символов: {remainder}",
+                                        text_color="#EA4335")
+                window_entry.configure(border_color="#EA4335"
+                                       )
 
         new_window = CTkToplevel(self.controller)
-        new_window.title('Новый предмет')
+        new_window.title("Новый предмет")
         extra_window(self.controller, new_window, 320, 240)
         new_window.resizable(False, False)
-        new_window.configure(fg_color='#FFFFFF')
+        new_window.configure(fg_color="#FFFFFF")
         new_window.grab_set()
 
         label2 = ctk.CTkLabel(
             new_window,
             text="Введите имя предмета",
-            font=("Segoe UI Semibold", 13),
-            text_color='#86868B'
+            font=("Segoe UI Semibold", 14),
+            text_color="#1D1D1F"
         )
-        label2.place(relx=0.5, rely=0.2, anchor='center')
+        label2.place(relx=0.5, rely=0.18, anchor="center")
 
+        # отслеживаемая строка
+        text = ctk.StringVar()
         # окно ввода
-        subject = ctk.CTkEntry(
+        window_entry = ctk.CTkEntry(
             new_window,
             font=("Segoe UI", 14),
-            text_color='#1D1D1F',
+            text_color="#1D1D1F",
+            textvariable=text,
             border_width=1,
             border_color="#E5E5E7",
-            fg_color='#F5F5F7',
-            width=200,
+            fg_color="#F5F5F7",
+            width=230,
             height=30,
             corner_radius=8
         )
-        subject.place(relx=0.5, rely=0.4, anchor='center')
+        window_entry.place(relx=0.5, rely=0.4, anchor="center")
+        text.trace_add("write", update_label_counter)
+
+        label_counter = ctk.CTkLabel(
+            new_window,
+            text="осталось символов: 25",
+            font=("Segoe UI Semibold", 13),
+            text_color="#86868B"
+        )
+        label_counter.place(relx=0.5, rely=0.53, anchor="center")
 
         # кнопки
         btn_ok = ctk.CTkButton(
             new_window,
             text="Добавить",
             font=("Segoe UI Semibold", 13),
-            text_color='#1D1D1F',
-            fg_color='#D3E3FD',
+            text_color="#1D1D1F",
+            fg_color="#D3E3FD",
             hover_color="#C1D5F0",
             corner_radius=20,
             width=150,
             height=40,
             command=add_new_value
         )
-        btn_ok.place(relx=0.5, rely=0.8, anchor='s')
+        btn_ok.place(relx=0.5, rely=0.8, anchor="center")
 
     def delete(self) -> None:
         """
-        Обновляет список(combo_menu['values']).
+        Обновляет список(combo_menu["values"]).
         Показывает сообщение.
         """
 
@@ -182,16 +225,17 @@ class StartWork(ctk.CTkFrame):
             update_subjects = self.controller.get_subjects()
             self.combo_menu.configure(values=update_subjects)
             self.combo_menu.set("")
-            self.label.configure(text="Предмет удален", text_color='#007AFF')
+            self.label.configure(text="Предмет удален", text_color="#007AFF")
             new_window.destroy()
+            self.after(3500, self.return_label)
 
         del_value = self.combo_menu.get()
         if del_value:
             if del_value in self.controller.get_subjects():
                 new_window = CTkToplevel(self.controller)
-                new_window.title('Удаление предмета')
+                new_window.title("Удаление предмета")
                 extra_window(self.controller, new_window, 320, 240)
-                new_window.configure(fg_color='#FFFFFF')
+                new_window.configure(fg_color="#FFFFFF")
                 new_window.resizable(False, False)
                 new_window.grab_set()
 
@@ -199,24 +243,25 @@ class StartWork(ctk.CTkFrame):
                     new_window,
                     text=f"Удалить предмет и очистить историю?",
                     font=("Segoe UI Semibold", 14),
-                    text_color='#1D1D1F'
+                    text_color="#1D1D1F"
                 )
-                label2.place(relx=0.5, rely=0.30, anchor='center')
+                label2.place(relx=0.5, rely=0.35, anchor="center")
 
                 btn_ok = ctk.CTkButton(
                     new_window,
                     text="Удалить",
                     font=("Segoe UI Semibold", 13),
-                    text_color='#1D1D1F',
-                    fg_color='#D3E3FD',
+                    text_color="#1D1D1F",
+                    fg_color="#D3E3FD",
                     hover_color="#C1D5F0",
                     corner_radius=20,
                     width=150,
                     height=40,
                     command=deletion_subject
                 )
-                btn_ok.place(relx=0.5, rely=0.8, anchor='s')
+                btn_ok.place(relx=0.5, rely=0.8, anchor="center")
             else:
-                self.label.configure(text="Такого предмета нет", text_color='#007AFF')
+                self.label.configure(text="Такого предмета нет", text_color="#007AFF")
         else:
-            self.label.configure(text="Нечего удалять", text_color='#007AFF')
+            self.label.configure(text="Нечего удалять", text_color="#007AFF")
+            self.after(3500, self.return_label)
