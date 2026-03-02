@@ -95,6 +95,7 @@ class StartWork(ctk.CTkFrame):
         self.btn_delete.place(relx=0.5, rely=0.90, anchor="center")
 
     def return_label(self) -> None:
+        """Возвращает текст подзаголовка."""
         self.label.configure(text="Выберите предмет из списка", text_color="#86868B")
 
     def choice(self) -> None:
@@ -111,13 +112,13 @@ class StartWork(ctk.CTkFrame):
             self.after(3500, self.return_label)
 
     def add(self) -> None:
-        """
-        Открывает окно для добавления нового предмета.
-        Проверяет ввод, добавляет предмет в список(combo_menu["values"]).
-        Показывает сообщение.
-        """
+        """Создает окно для добавления нового предмета."""
 
         def add_new_value() -> None:
+            """
+            Передает имя предмета для добавления в базу данных.
+            Показывает сообщение.
+            """
             new_subject = window_entry.get().strip()
             if new_subject:
                 passage = self.controller.add_subject(new_subject)
@@ -133,6 +134,11 @@ class StartWork(ctk.CTkFrame):
                 label2.configure(text="Введите имя предмета", text_color="#007AFF")
 
         def update_label_counter(*args) -> None:
+            """
+            Обновляет количество оставшихся вводимых символов.
+            Обновляет цвет рамки окна ввода и текст label_counter.
+            Ограничивает количество вводимых символов.
+            """
             max_size = 25
             name = text.get()
             text_size = len(name)
@@ -189,6 +195,7 @@ class StartWork(ctk.CTkFrame):
             corner_radius=8
         )
         window_entry.place(relx=0.5, rely=0.4, anchor="center")
+        # обработчик событий
         text.trace_add("write", update_label_counter)
 
         label_counter = ctk.CTkLabel(
@@ -216,11 +223,15 @@ class StartWork(ctk.CTkFrame):
 
     def delete(self) -> None:
         """
-        Обновляет список(combo_menu["values"]).
+        Создает окно для удаления предмета.
         Показывает сообщение.
         """
 
         def deletion_subject() -> None:
+            """
+            Передает имя предмета для удаления из базы данных.
+            Показывает сообщение.
+            """
             self.controller.delete_subject(del_value)
             update_subjects = self.controller.get_subjects()
             self.combo_menu.configure(values=update_subjects)
