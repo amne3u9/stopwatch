@@ -55,7 +55,7 @@ class SubjectActions(ctk.CTkFrame):
         base_path = os.path.dirname(__file__)
 
         arrow_img = ctk.CTkImage(
-            light_image=Image.open(os.path.join(base_path, "assets", "icon_back.png")),
+            light_image=Image.open(os.path.join(base_path, "assets/icons", "icon_back.png")),
             size=(20, 20)
         )
 
