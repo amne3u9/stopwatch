@@ -1,21 +1,26 @@
 import customtkinter as ctk
+import sys
 
 
 def center_window(main: ctk.CTk, width: int, height: int) -> None:
     """
-    Центрирует окно на экране.
+    Центрирует главное окно на экране.
     :param main: Объект CTk().
     :param width: Ширина окна.
     :param height: Высота окна.
     """
-    # коэффициент масштабирования
-    scaling = main._get_window_scaling()
     # размеры экрана(ширина, высота)
     screen_width = main.winfo_screenwidth()
     screen_height = main.winfo_screenheight()
     # вычисление координат(x, y)
-    x = int(((screen_width - width) // 2) * scaling)
-    y = int(((screen_height - height) // 2) * scaling)
+    x = (screen_width - width) // 2
+    y = (screen_height - height) // 2
+    # проверка на OC
+    if sys.platform != "darwin":
+        # коэффициент масштабирования
+        scaling = main._get_window_scaling()
+        x = int(x * scaling)
+        y = int(y * scaling)
 
     main.geometry(f"{width}x{height}+{x}+{y}")
 
@@ -28,23 +33,31 @@ def extra_window(main: ctk.CTk, window: ctk.CTkToplevel, width: int, height: int
     :param width: Ширина окна.
     :param height: Высота окна.
     """
+    # обновляем интерфейс
+    main.update_idletasks()
+    window.update_idletasks()
 
-    # коэффициент масштабирования
-    scaling = main._get_window_scaling()
     # координаты родительского окна
     x_main = main.winfo_x()
     y_main = main.winfo_y()
     # размеры родительского окна(ширина, высота)
     main_width = main.winfo_width()
     main_height = main.winfo_height()
+
     # вычисление координат(x, y)
-    x = int(x_main + (main_width - width * scaling) // 2)
-    y = int(y_main + (main_height - height * scaling) // 2)
+    if sys.platform != "darwin":
+        # коэффициент масштабирования
+        scaling = main._get_window_scaling()
+        x = x_main + (main_width - width * scaling) // 2
+        y = y_main + (main_height - height * scaling) // 2
+    else:
+        x = x_main + (main_width - width) // 2
+        y = y_main + (main_height - height) // 2
 
-    window.geometry(f"{width}x{height}+{x}+{y}")
+    window.geometry(f"{width}x{height}+{int(x)}+{int(y)}")
 
 
-def stopwatch_window(main: ctk.CTk, window: ctk.CTkToplevel, width: int, height: int) -> None:
+def stopwatch_position(main: ctk.CTk, window: ctk.CTkToplevel, width: int, height: int) -> None:
     """
     Располагает окно секундомера справа или слева от главного окна.
     :param main: Главное окно.
@@ -52,6 +65,10 @@ def stopwatch_window(main: ctk.CTk, window: ctk.CTkToplevel, width: int, height:
     :param width: Ширина окна Toplevel.
     :param height: Высота окна Toplevel.
     """
+    # обновляем интерфейс
+    main.update_idletasks()
+    window.update_idletasks()
+
     # коэффициент масштабирования
     scaling = main._get_window_scaling()
     # размеры экрана(по ширине)
@@ -62,15 +79,13 @@ def stopwatch_window(main: ctk.CTk, window: ctk.CTkToplevel, width: int, height:
     # размеры родительского окна(по ширине)
     main_width = main.winfo_width()
 
-    # определяем сторону
-    # условие с учётом масштабирования
-    size_place = (x_main + main_width) // scaling + width + 10
-    if screen_width >= size_place:
+    # вычисление координат(x, y)
+    y = y_main + 20
+    # определяем сторону с учётом масштабирования
+    if screen_width >= (x_main + main_width) // scaling + width + 10:
         x = x_main + main_width + 10
-        y = y_main + 20
     else:
         x = x_main - int(width * scaling + 10)
-        y = y_main + 20
 
     window.geometry(f"{width}x{height}+{x}+{y}")
 
@@ -83,20 +98,23 @@ def offset_window(main: ctk.CTk, window: ctk.CTkToplevel, width: int, height: in
     :param width: Ширина окна.
     :param height: Высота окна.
     """
+    # обновляем интерфейс
+    main.update_idletasks()
+    window.update_idletasks()
+
     # коэффициент масштабирования
     scaling = main._get_window_scaling()
-
     # размеры экрана(по ширине)
     screen_width = main.winfo_screenwidth()
     # координаты родительского окна
     x_main = main.winfo_x()
     y_main = main.winfo_y()
 
-    if screen_width >= x_main // scaling + 30 + width:
+    # вычисление координат(x, y)
+    y = y_main + 50
+    if screen_width >= x_main // scaling + width + 30:
         x = x_main + 30
-        y = y_main + 50
     else:
         x = x_main - 30
-        y = y_main + 50
 
     window.geometry(f"{width}x{height}+{x}+{y}")
