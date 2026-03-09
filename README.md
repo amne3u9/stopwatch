@@ -1,10 +1,26 @@
 # Трекер учебного времени
 
-Простое настольное приложение для учёта времени, потраченного на изучение различных предметов.
+Простое настольное приложение для отслеживания времени, затраченного на изучение различных предметов.
 
 Программа позволяет запускать и останавливать учебные сессии, сохранять историю занятий и анализировать затраченное время.
 
 Приложение написано на **Python** с использованием **CustomTkinter** для современного интерфейса.
+
+---
+
+## Интерфейс приложения
+
+### Главное окно
+
+![Стартовое окно](assets/screenshots/start_window.png)
+
+### Секундомер
+
+![Секундомер](assets/screenshots/stopwatch_window.png)
+
+### История занятий
+
+![История](assets/screenshots/history_window.png)
 
 ---
 
@@ -21,7 +37,7 @@
 
 ## Используемые технологии
 
-* Python 3
+* Python 3.12
 * customtkinter
 * tkcalendar
 
@@ -60,10 +76,14 @@ python main.py
 ## Структура проекта
 
 ```
-project/
+stopwatch/
 ├── assets
-│   └───icons
-│           icon_back.png
+│   ├── icons
+│   │       icon_back.png
+│   └── screenshots
+│       ├── start_window.png
+│       ├── stopwatch_window.png
+│       └── stopwatch_window.png
 │
 ├── .gitignore
 ├── main.py
