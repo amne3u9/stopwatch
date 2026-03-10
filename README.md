@@ -12,15 +12,15 @@
 
 ### Главное окно
 
-![Стартовое окно](assets/screenshots/start_window.png)
+![Стартовое окно](app/assets/screenshots/start_window.png)
 
 ### Секундомер
 
-![Секундомер](assets/screenshots/stopwatch_window.png)
+![Секундомер](app/assets/screenshots/stopwatch_window.png)
 
 ### История занятий
 
-![История](assets/screenshots/history_window.png)
+![История](app/assets/screenshots/history_window.png)
 
 ---
 
@@ -68,7 +68,7 @@ pip install -r requirements.txt
 ## Запуск приложения
 
 ```
-python main.py
+python app/main.py
 ```
 
 ---
@@ -77,26 +77,30 @@ python main.py
 
 ```
 stopwatch/
-├── assets
-│   ├── icons
-│   │       icon_back.png
-│   └── screenshots
-│       ├── start_window.png
-│       ├── stopwatch_window.png
-│       └── stopwatch_window.png
+├── app/
+│   ├── assets/
+│   │   ├── icons/
+│   │   │       icon_back.png
+│   │   └── screenshots/
+│   │       ├── history_window.png
+│   │       ├── start_window.png
+│   │       └── stopwatch_window.png 
+│   │
+│   ├── main.py
+│   ├── db_manager.py
+│   ├── demo_data.json
+│   ├── gui_date_range_selection.py
+│   ├── gui_history.py
+│   ├── gui_stopwatch.py
+│   ├── gui_subject_manager.py
+│   ├── stopwatch.py
+│   ├── subject_menu.py
+│   └── utils.py
+│
+│
+├── docs/
 │
 ├── .gitignore
-├── main.py
-├── db_manager.py
-├── demo_data.json
-├── gui_date_range_selection.py
-├── gui_history.py
-├── gui_stopwatch.py
-├── gui_subject_manager.py
-├── stopwatch.py
-├── subject_menu.py
-├── utils.py
-│
 ├── requirements.txt
 └── README.md
 ```
