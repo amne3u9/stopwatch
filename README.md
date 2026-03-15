@@ -99,6 +99,9 @@ stopwatch/
 │
 │
 ├── docs/
+│   ├── checklist.md
+│   └── test_plan.md
+│
 │
 ├── .gitignore
 ├── requirements.txt
