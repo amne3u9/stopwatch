@@ -1,5 +1,5 @@
 import json
-from datetime import datetime, date
+from datetime import date
 
 
 class DataBaseManager:
@@ -85,18 +85,17 @@ class DataBaseManager:
         else:
             return "00 ч. 00 м. 00 с."
 
-    def add_session(self, data: dict, name: str, duration: float) -> dict:
+    def add_session(self, data: dict, name: str, duration: float, session_date: str) -> dict:
         """
         Добавляет новую сессию по дате в предмет.
         :param data: Словарь с данными.
         :param name: Предмет.
         :param duration: Время сессии.
+        :param session_date: Дата запуска секундомера.
         :return: Словарь с добавленной сессией.
         """
-        # фиксируем дату сессии
-        today = self.get_date_today()
         # проверяем дату в истории, если нет создает список и добавляем время
-        data["subjects"][name]["history"].setdefault(today, []).append(duration)
+        data["subjects"][name]["history"].setdefault(session_date, []).append(duration)
 
         return data
 

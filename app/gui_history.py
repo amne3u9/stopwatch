@@ -87,7 +87,7 @@ class History(ctk.CTkFrame):
 
         ctk.CTkLabel(
             self.info3,
-            text="СРЕДНЯЯ СЕССИЯ",
+            text="СРЕДНЕЕ ВРЕМЯ В ДЕНЬ",
             font=("Segoe UI Bold", 11),
             text_color="#86868B"
         ).place(relx=0.05, rely=0.15, anchor="nw")

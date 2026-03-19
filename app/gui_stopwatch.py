@@ -48,7 +48,7 @@ class StopwatchWindow(ctk.CTkToplevel):
         self.btn_start = ctk.CTkButton(
             self,
             text="Старт",
-            font=("Segoe UI Semibold", 14),
+            font=("Segoe UI Semibold", 13),
             text_color="#FFFFFF",
             fg_color="#34A853",
             hover_color="#2E8B46",
@@ -135,7 +135,7 @@ class StopwatchWindow(ctk.CTkToplevel):
             width=250,
             height=42)
         self.btn_start.place(relx=0.5, rely=0.77, anchor="center")
-        self.parent.add_session(self.subject, self.stopwatch.reset_t())
+        self.parent.add_session(self.subject, *self.stopwatch.reset_t())
         self.update_ui()
 
     def create_force_quit_window(self, close_app: bool) -> None:
@@ -165,10 +165,10 @@ class StopwatchWindow(ctk.CTkToplevel):
             :param save: Флаг о добавлении сессии.
             """
             if save:
-                self.parent.add_session(self.subject, self.stopwatch.reset_t())
+                self.parent.add_session(self.subject, *self.stopwatch.reset_t())
             force_quit_window.destroy()
             self.destroy()
-            self.parent.stopwatch_close()
+            self.parent.stopwatch_closed()
             if close_app:
                 self.parent.destroy()
 
@@ -213,6 +213,11 @@ class StopwatchWindow(ctk.CTkToplevel):
                 self.create_force_quit_window(close_app)
             else:
                 self.destroy()
-                self.parent.stopwatch_close()
+                self.parent.stopwatch_closed()
                 if close_app:
                     self.parent.destroy()
+
+    def stop_work(self) -> bool:
+        if self.stopwatch.running:
+            self.stop()
+        return True

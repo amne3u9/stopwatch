@@ -227,12 +227,12 @@ class StartWork(ctk.CTkFrame):
         Показывает сообщение.
         """
 
-        def deletion_subject() -> None:
+        def deletion_subject(close_swatch: bool = False) -> None:
             """
             Передает имя предмета для удаления из базы данных.
             Показывает сообщение.
             """
-            self.controller.delete_subject(del_value)
+            self.controller.delete_subject(del_value, close_swatch)
             update_subjects = self.controller.get_subjects()
             self.combo_menu.configure(values=update_subjects)
             self.combo_menu.set("")
@@ -243,6 +243,7 @@ class StartWork(ctk.CTkFrame):
         del_value = self.combo_menu.get()
         if del_value:
             if del_value in self.controller.get_subjects():
+                close_stopwatch = self.controller.is_stopwatch_participation(del_value)
                 new_window = CTkToplevel(self.controller)
                 new_window.title("Удаление предмета")
                 extra_window(self.controller, new_window, 320, 240)
@@ -252,11 +253,20 @@ class StartWork(ctk.CTkFrame):
 
                 label2 = ctk.CTkLabel(
                     new_window,
-                    text=f"Удалить предмет и очистить историю?",
+                    text=f"",
                     font=("Segoe UI Semibold", 13),
                     text_color="#1D1D1F"
                 )
                 label2.place(relx=0.5, rely=0.35, anchor="center")
+
+                if not close_stopwatch:
+                    label2.configure(
+                        text="Удалить предмет и очистить историю?"
+                    )
+                else:
+                    label2.configure(
+                        text="У этого предмета есть активный секундомер.\n Удалить предмет и очистить историю?"
+                    )
 
                 btn_ok = ctk.CTkButton(
                     new_window,
@@ -268,7 +278,7 @@ class StartWork(ctk.CTkFrame):
                     corner_radius=20,
                     width=150,
                     height=40,
-                    command=deletion_subject
+                    command=lambda: deletion_subject(close_stopwatch)
                 )
                 btn_ok.place(relx=0.5, rely=0.8, anchor="center")
             else:

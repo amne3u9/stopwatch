@@ -18,6 +18,7 @@ class App(ctk.CTk):
         self.protocol("WM_DELETE_WINDOW", self.general_closure)
 
         self.stopwatch_window: StopwatchWindow | None = None
+        self.subject_in_stopwatch = None
 
         self.db_path = "demo_data.json"
         self.db_m = DataBaseManager(self.db_path)
@@ -43,14 +44,23 @@ class App(ctk.CTk):
         Если окно уже существует — переносит его на передний план.
         """
         if self.stopwatch_window is None:
-            self.stopwatch_window = StopwatchWindow(self, self.current_subject)
+            self.subject_in_stopwatch = self.current_subject
+            self.stopwatch_window = StopwatchWindow(self, self.subject_in_stopwatch)
         else:
             self.stopwatch_window.focus()
             self.stopwatch_window.lift()
 
-    def stopwatch_close(self) -> None:
+    def stopwatch_status(self) -> bool:
+        return self.stopwatch_window.stop_work()
+
+    def close_stopwatch_window(self) -> None:
+        self.stopwatch_window.destroy()
+        self.stopwatch_closed()
+
+    def stopwatch_closed(self) -> None:
         """Сбрасывает ссылку на окно секундомера после его закрытия."""
         self.stopwatch_window = None
+        self.subject_in_stopwatch = None
 
     def load_data(self) -> dict:
         return self.db_m.load_base()
@@ -65,7 +75,14 @@ class App(ctk.CTk):
         self.save_data(self.data)
         return True
 
-    def delete_subject(self, subject: str) -> None:
+    def is_stopwatch_participation(self, subject: str) -> bool:
+        if subject == self.subject_in_stopwatch:
+            return self.stopwatch_status()
+        return False
+
+    def delete_subject(self, subject: str, close_swatch: bool) -> None:
+        if close_swatch:
+            self.close_stopwatch_window()
         self.data = self.db_m.delete_subject(self.data, subject)
         self.save_data(self.data)
 
@@ -75,8 +92,8 @@ class App(ctk.CTk):
     def get_subjects(self) -> list[str]:
         return self.db_m.get_subjects(self.data)
 
-    def add_session(self, subject: str, value: float) -> None:
-        self.data = self.db_m.add_session(self.data, subject, value)
+    def add_session(self, subject: str, value: float, session_date: str) -> None:
+        self.data = self.db_m.add_session(self.data, subject, value, session_date)
         self.save_data(self.data)
 
     def get_time(self, subject: str) -> str:
