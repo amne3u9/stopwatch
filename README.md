@@ -95,6 +95,7 @@ stopwatch/
 │   ├── gui_history.py
 │   ├── gui_stopwatch.py
 │   ├── gui_subject_manager.py
+│   ├── paths.py
 │   ├── stopwatch.py
 │   ├── subject_menu.py
 │   └── utils.py
