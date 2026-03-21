@@ -1,6 +1,7 @@
 import customtkinter as ctk
 
 from utils import center_window
+from paths import PathManager
 from db_manager import DataBaseManager
 from gui_subject_manager import StartWork
 from subject_menu import SubjectActions
@@ -12,7 +13,7 @@ class App(ctk.CTk):
     def __init__(self):
         super().__init__()
         center_window(self, 400, 500)
-        self.title("Subject Selection")
+        self.title("Incr.")
         self.configure(fg_color="#FFFFFF")
         self.resizable(False, False)
         self.protocol("WM_DELETE_WINDOW", self.general_closure)
@@ -20,7 +21,8 @@ class App(ctk.CTk):
         self.stopwatch_window: StopwatchWindow | None = None
         self.subject_in_stopwatch = None
 
-        self.db_path = "demo_data.json"
+        self.path_manager = PathManager("Incr.")
+        self.db_path = self.path_manager.get_data_path("demo_data.json")
         self.db_m = DataBaseManager(self.db_path)
         self.data = self.load_data()
         self.current_subject = ""
@@ -136,7 +138,7 @@ class App(ctk.CTk):
         if hasattr(frame, "on_show"):
             frame.on_show()
 
-        self.title(getattr(frame, "window_title", "Subject Selection"))
+        self.title(getattr(frame, "window_title", "Incr."))
 
     def general_closure(self) -> None:
         """

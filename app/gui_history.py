@@ -1,6 +1,5 @@
 import customtkinter as ctk
 from PIL import Image
-import os
 
 from gui_date_range_selection import ask_date_range
 
@@ -9,6 +8,7 @@ class History(ctk.CTkFrame):
     def __init__(self, master, controller):
         super().__init__(master)
         self.controller = controller
+        self.pm = self.controller.path_manager
         self.window_title = "История предмета"
         self.configure(fg_color="transparent")
 
@@ -101,10 +101,8 @@ class History(ctk.CTkFrame):
         self.avg_time_sessions.place(relx=0.05, rely=0.45, anchor="nw")
 
         # кнопки управления
-        base_path = os.path.dirname(__file__)
-
         arrow_img = ctk.CTkImage(
-            light_image=Image.open(os.path.join(base_path, "assets/icons", "icon_back.png")),
+            light_image=Image.open(self.pm.file_path("assets", "icons", "icon_back.png")),
             size=(20, 20)
         )
 

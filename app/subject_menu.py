@@ -1,13 +1,13 @@
-"""Окно меню предмета (секундомер и история)."""
+"""Окно меню предмета (секундомер и история предмета)."""
 import customtkinter as ctk
 from PIL import Image
-import os
 
 
 class SubjectActions(ctk.CTkFrame):
     def __init__(self, master, controller):
         super().__init__(master)
         self.controller = controller
+        self.pm = self.controller.path_manager
         self.window_title = "Меню предмета"
         self.configure(fg_color="transparent")
 
@@ -52,10 +52,8 @@ class SubjectActions(ctk.CTkFrame):
         self.label_time.place(relx=0.06, rely=0.45, anchor="nw")
 
         # Кнопки управления
-        base_path = os.path.dirname(__file__)
-
         arrow_img = ctk.CTkImage(
-            light_image=Image.open(os.path.join(base_path, "assets/icons", "icon_back.png")),
+            light_image=Image.open(self.pm.file_path("assets", "icons", "icon_back.png")),
             size=(20, 20)
         )
 
